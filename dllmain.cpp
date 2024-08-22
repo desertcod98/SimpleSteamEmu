@@ -9,15 +9,11 @@ struct MaybeGameInfo {
 };
 typedef struct MaybeGameInfo MaybeGameInfo;
 
-struct UnknIntermediateStruct {
-    MaybeGameInfo* ptrToMaybeGameInfo;
-};
-typedef struct UnknIntermediateStruct UnknIntermediateStruct;
 
 struct SteamContext {
     unsigned __int64** firstPtrToDummyReturns1;           // Pointer at offset 0
     char padding0[40];     // Padding to ensure ptr2 is at offset 48
-    UnknIntermediateStruct* unkn;         // Integer at offset 48
+    MaybeGameInfo** ptrPtrToMaybeGameInfo;         // Integer at offset 48
     char padding1[72]; //Padding to offset 128
 };
 typedef struct SteamContext SteamContext;
@@ -38,9 +34,8 @@ __declspec(dllexport) SteamContext SteamInternal_ContextInit() {
     MaybeGameInfo* ptrToMaybeGameInfo = (MaybeGameInfo*)malloc(sizeof(MaybeGameInfo));
     ptrToMaybeGameInfo->ptrToGetDLCCount = ptrToGetGameDLCCount;
     ptrToMaybeGameInfo->ptrToDummyReturns1 = dummyFuncPtr;
-    UnknIntermediateStruct* unkn = (UnknIntermediateStruct*)malloc(sizeof(UnknIntermediateStruct));
-    unkn->ptrToMaybeGameInfo = ptrToMaybeGameInfo;
-    steamContext.unkn = unkn;
+    steamContext.ptrPtrToMaybeGameInfo = (MaybeGameInfo**)malloc(sizeof(MaybeGameInfo*));
+    *(steamContext.ptrPtrToMaybeGameInfo) = ptrToMaybeGameInfo;
 
     unsigned __int64 *ptr3 = &((unsigned __int64)dummyFuncPtr);
     unsigned __int64 ptr2 = (unsigned __int64)ptr3 - 168;
